@@ -1,0 +1,13 @@
+##torch
+##torchvision
+scipy
+scikit-learn
+packaging
+sentencepiece
+datasets
+accelerate>=0.21.0,<0.23.0
+tokenizers
+protobuf
+transformers
+einops
+##flash-attn

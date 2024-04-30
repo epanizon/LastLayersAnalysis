@@ -1,0 +1,34 @@
+#!/bin/bash
+#SBATCH --partition=DGX
+#SBATCH --account=lade
+#SBATCH --nodes=1
+#SBATCH --time=0:30:00            
+#SBATCH --ntasks-per-node=1       
+#SBATCH --cpus-per-task=32           
+#SBATCH --mem=100G                
+#SBATCH --job-name=test
+#SBATCH --gres=gpu:1 
+
+source /u/area/epanizon/.bashrc
+#source /etc/profile.d/modules.sh
+module use /opt/nvidia/hpc_sdk/modulefiles/
+module load nvhpc
+
+source /u/area/epanizon/scratch/miniconda3/bin/activate Lllama2
+export OMP_NUM_THREADS=32
+
+accelerate launch \
+    --mixed_precision bf16 \
+    --num_machines 1 \
+    --num_processes 1 \
+    main.py \
+    --checkpoint_dir  "/u/area/epanizon/scratch/llama-2-7b" \
+    --model_name "llama-2-7b" \
+    --use_slow_tokenizer \
+    --text_dataset "mmlu_hs_us_hist/" \
+    --max_seq_len 256 \
+    --preprocessing_num_workers 16 \
+    --batch_size 4 \
+    --out_dir ./results/ \
+    --out_filename "mmlu_us_hist" \
+    --logging_steps  2000 \
